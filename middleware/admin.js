@@ -5,15 +5,17 @@ const JWT_ADMIN_PASSWORD = process.env.JWT_ADMIN_PASSWORD ;
 
 function adminMiddleware(req, res, next) {
     const token = req.headers.token ;
-    const admin = jwt.verify(token, JWT_ADMIN_PASSWORD) ;
+    const user = jwt.verify(token, JWT_ADMIN_PASSWORD) ;
 
-    if (admin) {
-        req.adminId = admin.adminId ;
+    if (user) {
+        req.userId = user.id ;
         next() ;
     }
     else return res.json(
-        {message : "Invalid token"}
+        {message : "You are not signed in"}
     ) ;
 }
 
-module.exports = adminMiddleware ;
+module.exports = {
+    adminMiddleware :adminMiddleware
+} ;

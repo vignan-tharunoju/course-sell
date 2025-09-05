@@ -8,12 +8,14 @@ function userMiddleware(req, res, next) {
     const user = jwt.verify(token, JWT_USER_PASSWORD) ;
 
     if (user) {
-        req.userId = user.userId ;
+        req.userId = user.id ;
         next() ;
     }
     else return res.json(
-        {message : "Invalid token"}
+        {message : "You are not signed in"}
     ) ;
 }
 
-module.exports = userMiddleware ;
+module.exports = {
+    userMiddleware : userMiddleware
+} ;

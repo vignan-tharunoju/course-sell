@@ -63,9 +63,9 @@ adminRouter.post('/signin', async (req, res) => {
     //valid schema, check for correctness of password and return a token
     try {
         const {email, password} = req.body ;
-        const admin = await adminModel.findOne({email}) ;
+        const user = await adminModel.findOne({email}) ;
 
-        if (!admin) {
+        if (!user) {
             return res.status(401).json({message : "Invalid email or password"})
         }
         
@@ -76,7 +76,7 @@ adminRouter.post('/signin', async (req, res) => {
         }
 
         const token = jwt.sign({
-            adminId : admin._id
+            id : user._id
         }, JWT_ADMIN_PASSWORD, { expiresIn: '24h' });
         
         res.json({
@@ -90,6 +90,60 @@ adminRouter.post('/signin', async (req, res) => {
         }) ;
     }
 })
+
+adminRouter.post('/course', adminMiddleware, async (req, res) => {
+    const adminId = req.userId ;
+
+    const {title, description, imageUrl, price} = req.body ;
+
+    const course = await courseModel.create({
+        title : title,
+        description : description,
+        imageUrl : imageUrl,
+        price : price,
+        creatorId : adminId
+    })
+
+    res.json({
+        message : "Course created",
+        courseId : course._id
+    })
+})
+
+adminRouter.put('/course', adminMiddleware, async (req, res) => {
+    const adminId = req.userId ;
+
+    const {title, description, imageUrl, price, courseId} = req.body ;
+
+    const course = await courseModel.updateOne({
+        _id : courseId,
+        creatorId : adminId
+    },{
+        title : title,
+        description : description,
+        imageUrl : imageUrl,
+        price : price,
+    })
+
+    res.json({
+        message : "Course created",
+        courseId : course._id
+    })
+})
+
+adminRouter.get('/course/bulk', adminMiddleware, async (req, res) => {
+    const adminId = req.userId ;
+
+    const courses = await courseModel.find({
+        creatorId : adminId
+    })
+
+    res.json({
+        message : "Course created",
+        courses
+    })
+})
+
 
 //this function should be in courseModel actually, resource course
 adminRouter.delete('/delete', async (req, res) => {

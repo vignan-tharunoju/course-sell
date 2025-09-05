@@ -3,18 +3,17 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 dotenv.config();
 
-const app = express(); app.use(express.json());
+const app = express(); 
+app.use(express.json());
 const PORT = process.env.PORT;
 const MONGODB_URL = process.env.MONGODB_URL;
 
 
 const userRoutes = require('../course-selling-app/routes/user');
-const instructorRoutes = require('../course-selling-app/routes/instructor');
 const adminRoutes = require('../course-selling-app/routes/admin');
 const courseRoutes = require('../course-selling-app/routes/course')
 
 app.use('/api/user', userRoutes) ;
-app.use('/api/instructor', instructorRoutes)
 app.use('/api/admin', adminRoutes) ;
 app.use('/api/course', courseRoutes) ;
 

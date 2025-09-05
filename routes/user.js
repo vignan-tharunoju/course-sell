@@ -75,7 +75,7 @@ userRouter.post('/signin', async (req, res) => {
         }
 
         const token = jwt.sign({
-            userId : user._id
+            id : user._id
         }, JWT_USER_PASSWORD, { expiresIn: '24h' });
         
         res.json({
@@ -90,30 +90,19 @@ userRouter.post('/signin', async (req, res) => {
     }
 })
 
-userRouter.post('/course/purchase', async (req, res) => {
-    res.json({
-        message : 'purchased'
-    });
-    //zod schema => courseId
-    //userAuth
-    //purchases => userId, courseId
-})
+userRouter.get('/purchases', async (req, res) => {
+    const userId = req.userId ;
 
-userRouter.get('/user/purchases', async (req, res) => {
-    res.json({
-        message : 'list of purchases'
+    const purchases = await purchaseModel.find({
+        userId
     })
-    //zod schema => courseId
-    //userAuth
-    //purchase table => filter by userId
-})
 
-userRouter.get('/courses', async (req, res) => {
-    res.json({
-        message : 'list of all courses'
+    const coursesData = await courseModel.find({
+        _id: {$in : purchases.map(x => x.courseId)}
     })
-    //auth
-    //return course table without userIds
+    res.json({
+        purchases
+    })
 })
 
 module.exports = userRouter;
